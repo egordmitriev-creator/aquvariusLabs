@@ -23,8 +23,8 @@ def driver():
 # Тест для проверки авторизации
 def test_success_login(driver):
     # Переход на страницу авторизации
-    driver.get('https://localhost:2443/#/login')
-    time.sleep(5)  # Ожидание загрузки страницы
+    driver.get('https://localhost:2443/?next=/login#/login')
+    time.sleep(3)  # Ожидание загрузки страницы
 
     # Поиск элементов на странице
     username = driver.find_element(By.ID, 'username')
@@ -37,7 +37,7 @@ def test_success_login(driver):
 
     # Нажатие кнопки входа
     login_button.click()
-    time.sleep(5)  # Ожидание завершения авторизации
+    time.sleep(3)  # Ожидание завершения авторизации
 
     successWindow = driver.find_element(By.CLASS_NAME, 'app-container')
 
@@ -46,10 +46,9 @@ def test_success_login(driver):
 
 def test_fail_login(driver):
     # Переход на страницу авторизации
-    driver.get('https://localhost:2443/#/login')
-    time.sleep(5)  # Ожидание загрузки страницы
+    driver.get('https://localhost:2443/?next=/login#/login')
+    time.sleep(3)
 
-    # Поиск элементов на странице
     username = driver.find_element(By.ID, 'username')
     password = driver.find_element(By.ID, 'password')
     login_button = driver.find_element(By.CLASS_NAME, 'btn.btn-primary.mt-3')
@@ -58,10 +57,41 @@ def test_fail_login(driver):
     username.send_keys('root')
     password.send_keys('OpenBmc') # Не верный пароль
 
-    # Нажатие кнопки входа
     login_button.click()
-    time.sleep(5)  # Ожидание завершения авторизации
+    time.sleep(3)
 
     errorWindow = driver.find_element(By.CLASS_NAME, 'neterror')
 
+    assert errorWindow.is_displayed()
+
+def test_block_user(driver):
+    # Функция для попытки входа
+    def attempt_login(username_value, password_value):
+        driver.get('https://localhost:2443/?next=/login#/login')
+        time.sleep(3)
+        # Ожидание появления элементов формы
+        username = driver.find_element(By.ID, 'username')
+        password = driver.find_element(By.ID, 'password')
+        login_button = driver.find_element(By.CLASS_NAME, 'btn.btn-primary.mt-3')
+        
+        # Ввод данных для авторизации
+        username.send_keys(username_value)
+        password.send_keys(password_value)
+        login_button.click()
+
+    # Попытка входа с правильным паролем
+    attempt_login('user', 'somepass1')  # Правильный пароль
+    time.sleep(3)
+
+    # Три попытки входа с неверным паролем
+    for _ in range(3):
+        attempt_login('user', 'OpenBmc')  # Неверный пароль
+        time.sleep(3)
+
+    # Попытка входа с правильным паролем
+    attempt_login('user', 'somepass1')  # Правильный пароль
+    time.sleep(3)
+
+    errorWindow = driver.find_element(By.CLASS_NAME, 'neterror')
+    
     assert errorWindow.is_displayed()
