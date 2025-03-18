@@ -27,8 +27,10 @@ def session():
 # Тест аутентификации
 def test_authentication(session):
     auth_url = f"{BASE_URL}/SessionService/Sessions"
-    response = session.get(auth_url)
+    response = session.post(auth_url)
     assert response.status_code == 200, "Authentication error"
+    session_info = response.json()
+    assert "@odata.id" in session_info, "The Session token field is missing in the response"
     logger.info("The authentication test was completed successfuly")
 
 # Тест получения информации о системе
