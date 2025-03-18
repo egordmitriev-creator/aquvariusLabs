@@ -30,7 +30,7 @@ def test_authentication(session):
     response = session.post(auth_url)
     assert response.status_code == 200, "Authentication error"
     session_info = response.json()
-    assert "@odata.id" in session_info, "The Session token field is missing in the response"
+    assert "X-Auth-Token" in session_info, "The Session token field is missing in the response"
     logger.info("The authentication test was completed successfuly")
 
 # Тест получения информации о системе
