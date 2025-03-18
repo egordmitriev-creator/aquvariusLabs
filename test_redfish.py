@@ -27,10 +27,16 @@ def session():
 # Тест аутентификации
 def test_authentication(session):
     auth_url = f"{BASE_URL}/SessionService/Sessions"
-    response = session.post(auth_url)
-    assert response.status_code == 200, "Authentication error"
+
+    auth_data ={
+        "UserName": f"{USERNAME}",
+        "Password": f"{PASSWORD}"
+    }
+
+    response = session.post(auth_url, json = auth_data)
+    assert response.status_code == 201, "Authentication error" # При выполнении post запрса возвращает 201 (Создано)
     session_info = response.json()
-    assert "X-Auth-Token" in session_info, "The Session token field is missing in the response"
+    assert "@odata.id" in session_info, "The Session token field is missing in the response"
     logger.info("The authentication test was completed successfuly")
 
 # Тест получения информации о системе
@@ -52,12 +58,12 @@ def test_pover_on(session):
     }
 
     response = session.post(pover_usl, json = pover_data)
-    assert response.status_code == 202, "Error when trying to turn on the server"
+    assert response.status_code == 204, "Error when trying to turn on the server" # Текущая версия Bmc возвращает 204 
 
     # Проверка изменения статуса системы
     system_url = f"{BASE_URL}/Systems/system"
     response = session.get(system_url)
     system_info = response.json()
 
-    assert system_info["PowerState"] == "On", "The server did not turn on"
+    assert system_info["PowerState"] == "On", "The server did not turn on" # Тест на этом моменте завершится с ошибкой, текущая версия Bmc не включается
     logger.info("The power management test was completed successfully")
