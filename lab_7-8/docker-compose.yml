@@ -8,6 +8,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # Доступ к Docker на хосте
       - jenkins_home:/var/jenkins_home # Папка Jenkins для сохранения данных
+      - ./jenkins-data:/data
     environment:
       JENKINS_OPTS: "--httpPort=8080" # Настройка порта
     restart: always
