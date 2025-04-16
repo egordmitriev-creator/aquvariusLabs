@@ -5,6 +5,7 @@ services:
     ports:
       - "8080:8080"   # Jenkins веб-интерфейс
       - "50000:50000" # Агент-соединения
+      - "2443:2443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # Доступ к Docker на хосте
       - jenkins_home:/var/jenkins_home # Папка Jenkins для сохранения данных
