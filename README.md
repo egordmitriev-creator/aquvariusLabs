@@ -70,3 +70,6 @@
 - Использование `perf`, `vmstat`, `nmon` для анализа производительности
 
 **Технологии:** Jenkins, Docker, QEMU, bash, perf/vmstat
+
+
+
